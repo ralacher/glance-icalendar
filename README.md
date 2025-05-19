@@ -46,5 +46,25 @@ This project provides a FastAPI web service that fetches and parses WebDAV calen
 ]
 ```
 
+## Example: Using the API with a Custom Template
+
+```
+- type: custom-api
+  title: "Events"
+  cache: 1h
+  url: "http://glance-icalendar:8009/calendar?url=YOUR-URL-HERE"
+  template: |
+    <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+    {{ range .JSON.Array "events" }}
+      <li>
+        <p class="size-h4 color-highlight block text-truncate">{{ .String "summary" }}</p>
+        <ul class="list-horizontal-text">
+          {{ .String "date" }}
+        </ul>
+      </li>
+    {{ end }}
+    </ul>
+```
+
 ## License
 MIT
