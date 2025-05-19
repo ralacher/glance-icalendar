@@ -1,9 +1,9 @@
-# Glance Calendar WebDAV FastAPI Service
+# Glance Calendar
 
-This project provides a FastAPI web service that fetches and parses WebDAV calendar data (iCal/VEVENT format) from a given URL. It exposes a REST API endpoint that retrieves events, extracts their summary and date, and returns them as a JSON array, filtering out past events.
+This project provides a Glance widget that fetches and parses calendar data (iCal/VEVENT format) from a given URL.
 
 ## Features
-- Accepts a WebDAV calendar URL as a query parameter
+- Accepts a URL as a query parameter
 - Fetches and parses VEVENT entries from the calendar
 - Returns only events with a date greater than or equal to today
 - Dates are formatted as "Month Day, Year" (e.g., May 25, 2025)
