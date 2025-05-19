@@ -44,7 +44,8 @@ async def get_webdav_content(url: str = Query(..., description="WebDAV resource 
         # Remove the helper _dt_obj before returning
         for event in events:
             event.pop("_dt_obj", None)
-        return JSONResponse(content=events)
+        print(f"Parsed events: {events}")  # Log the parsed events
+        return JSONResponse(content={"events": events})
     except httpx.HTTPError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
