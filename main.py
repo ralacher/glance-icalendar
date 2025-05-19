@@ -8,7 +8,7 @@ from datetime import datetime
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/calendar")
 async def get_webdav_content(url: str = Query(..., description="WebDAV resource URL")):
     print(f"Received URL: {url}")  # Log the received URL
     try:
