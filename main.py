@@ -24,6 +24,7 @@ async def get_webdav_content(url: str = Query(..., description="WebDAV resource 
                 continue
             summary = None
             date = None
+            dt_obj = None
             for line in block.splitlines():
                 if line.startswith("SUMMARY:"):
                     summary = line[len("SUMMARY:"):].strip()
@@ -35,11 +36,14 @@ async def get_webdav_content(url: str = Query(..., description="WebDAV resource 
                     except Exception:
                         date = None
             # Only include if date is today or in the future
-            if summary and date:
-                # Parse again to compare
-                dt_obj = datetime.strptime(date, "%B %d, %Y").date()
+            if summary and date and dt_obj:
                 if dt_obj >= today:
-                    events.append({"summary": summary, "date": date})
+                    events.append({"summary": summary, "date": date, "_dt_obj": dt_obj})
+        # Sort events by date ascending
+        events.sort(key=lambda x: x["_dt_obj"])
+        # Remove the helper _dt_obj before returning
+        for event in events:
+            event.pop("_dt_obj", None)
         return JSONResponse(content=events)
     except httpx.HTTPError as e:
         raise HTTPException(status_code=400, detail=str(e))
