@@ -25,20 +25,44 @@ async def get_webdav_content(url: str = Query(..., description="WebDAV resource 
             summary = None
             date = None
             dt_obj = None
+            startTime = None
+            endTime = None
             for line in block.splitlines():
                 if line.startswith("SUMMARY:"):
                     summary = line[len("SUMMARY:"):].strip()
                 elif line.startswith("DTSTART"):
                     dt_raw = line.split(":", 1)[-1].strip()
                     try:
-                        dt_obj = datetime.strptime(dt_raw[:8], "%Y%m%d").date()
-                        date = dt_obj.strftime("%B %d, %Y")
+                        # Check if time information is included (format: YYYYMMDDTHHMMSS)
+                        if len(dt_raw) > 8 and 'T' in dt_raw:
+                            # Parse date and time
+                            full_dt = datetime.strptime(dt_raw[:15], "%Y%m%dT%H%M%S")
+                            dt_obj = full_dt.date()
+                            date = dt_obj.strftime("%B %d, %Y")
+                            startTime = full_dt.strftime("%I:%M %p")  # Format: 12:00 PM
+                        else:
+                            # Only date, no time
+                            dt_obj = datetime.strptime(dt_raw[:8], "%Y%m%d").date()
+                            date = dt_obj.strftime("%B %d, %Y")
                     except Exception:
                         date = None
+                elif line.startswith("DTEND"):
+                    dt_raw = line.split(":", 1)[-1].strip()
+                    try:
+                        if len(dt_raw) > 8 and 'T' in dt_raw:
+                            end_dt = datetime.strptime(dt_raw[:15], "%Y%m%dT%H%M%S")
+                            endTime = end_dt.strftime("%I:%M %p")  # Format: 12:00 PM
+                    except Exception:
+                        endTime = None
             # Only include if date is today or in the future
             if summary and date and dt_obj:
                 if dt_obj >= today:
-                    events.append({"summary": summary, "date": date, "_dt_obj": dt_obj})
+                    event_data = {"summary": summary, "date": date, "_dt_obj": dt_obj}
+                    if startTime:
+                        event_data["startTime"] = startTime
+                    if endTime:
+                        event_data["endTime"] = endTime
+                    events.append(event_data)
         # Sort events by date ascending
         events.sort(key=lambda x: x["_dt_obj"])
         # Remove the helper _dt_obj before returning
