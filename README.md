@@ -7,6 +7,7 @@ This project provides a Glance widget that fetches and parses calendar data (iCa
 - Fetches and parses VEVENT entries from the calendar
 - Returns only events with a date greater than or equal to today
 - Dates are formatted as "Month Day, Year" (e.g., May 25, 2025)
+- Times are formatted as "HH:MM AM/PM" (e.g., 10:00 AM)
 - Dockerfile included for easy containerization
 
 ## Usage
@@ -36,14 +37,16 @@ This project provides a Glance widget that fetches and parses calendar data (iCa
    ```
 
 ## API
-- `GET /?url=<webdav_url>`: Returns a JSON array of upcoming events with their summary and date.
+- `GET /?url=<webdav_url>`: Returns a JSON array of upcoming events with their summary, date, and time information.
 
 ## Example Response
 ```json
-[
-  {"summary": "Rob Dentist", "date": "May 25, 2025"},
-  {"summary": "Team Meeting", "date": "June 1, 2025"}
-]
+{
+  "events": [
+    {"summary": "Rob Dentist", "date": "May 25, 2025", "startTime": "10:00 AM", "endTime": "11:00 AM"},
+    {"summary": "Team Meeting", "date": "June 1, 2025", "startTime": "09:30 AM", "endTime": "10:30 AM"}
+  ]
+}
 ```
 
 ## Example: Using the API with a Custom Template
@@ -60,6 +63,9 @@ This project provides a Glance widget that fetches and parses calendar data (iCa
         <p class="size-h4 color-highlight block text-truncate">{{ .String "summary" }}</p>
         <ul class="list-horizontal-text">
           {{ .String "date" }}
+          {{ if .Has "startTime" }}
+          <li>{{ .String "startTime" }}{{ if .Has "endTime" }} - {{ .String "endTime" }}{{ end }}</li>
+          {{ end }}
         </ul>
       </li>
     {{ end }}
