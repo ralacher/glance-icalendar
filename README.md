@@ -63,11 +63,15 @@ This project provides a Glance widget that fetches and parses calendar data (iCa
         <p class="size-h4 color-highlight block text-truncate">{{ .String "summary" }}</p>
         <ul class="list-horizontal-text">
           {{ .String "date" }}
-          {{ if .Has "startTime" }}
-          <li>{{ .String "startTime" }}{{ if .Has "endTime" }} - {{ .String "endTime" }}{{ end }}</li>
+        </ul>
+        <ul class="list-horizontal-text">
+          {{ if .Exists "startTime" }}
+            <li>{{ .String "startTime" }}{{ if .Exists "endTime" }} - {{ .String "endTime" }}{{ end }}</li>
+          {{ else }}
+            <li>All Day</li>
           {{ end }}
         </ul>
-      </li>
+        </li>
     {{ end }}
     </ul>
 ```
